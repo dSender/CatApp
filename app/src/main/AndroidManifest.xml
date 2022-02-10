@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CatApp">
         <activity
-            android:name=".FavouriteActivity"
-            android:exported="false" />
-        <activity
             android:name=".DetailActivity"
             android:exported="false" />
         <activity

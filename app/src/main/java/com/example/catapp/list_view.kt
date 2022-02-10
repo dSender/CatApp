@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+
 import com.bumptech.glide.Glide
 import com.example.catapp.DetailActivity.Companion.CAT_FACT_IMAGE
 import com.example.catapp.DetailActivity.Companion.CAT_FACT_TEXT
@@ -42,6 +43,7 @@ class CatsListHolder(itemView: View): RecyclerView.ViewHolder(itemView){
         textView.text = cat.text
 
         Glide.with(itemView).load(cat.img).into(imageView)
+
 
         itemView.setOnClickListener{
             openDetailActivity(itemView.context, cat)

@@ -2,13 +2,21 @@ package com.example.catapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.TableLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.json.JSONArray
@@ -22,15 +30,45 @@ class MainActivity : AppCompatActivity() {
     private var catImagesList: MutableList<String> = mutableListOf()
     private var completedCatList: MutableList<String> = mutableListOf()
     private var cats_: MutableList<Cat> = mutableListOf()
+    private var btnHome: Button? = null
+    private var btnFav: Button? = null
+    private var atHomePage: Boolean = true
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getSupportActionBar()?.hide();
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        InitRealm()
 
+
+        btnHome = findViewById(R.id.button2)
+        btnFav = findViewById(R.id.button)
+
+        btnHome?.setOnClickListener {
+            if (cats_.size != 0){
+                setList(cats_)
+            }
+            else{
+                val queue = Volley.newRequestQueue(this)
+                getCatsFromServer(queue)
+            }
+            atHomePage = true
+        }
+        btnFav?.setOnClickListener {
+            setList(showListFromDB())
+            atHomePage = false
+        }
+
+        InitRealm()
         val queue = Volley.newRequestQueue(this)
         getCatsFromServer(queue)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!atHomePage){
+            setList(showListFromDB())
+        }
     }
 
     private fun saveIntoDB(cats: List<Cat>){
@@ -38,11 +76,6 @@ class MainActivity : AppCompatActivity() {
         realm.beginTransaction()
         realm.copyToRealm(cats)
         realm.commitTransaction()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        setList(showListFromDB())
     }
 
     private fun loadFromDB(): List<Cat>{
@@ -85,8 +118,6 @@ class MainActivity : AppCompatActivity() {
             },
             {
                 Toast.makeText(this, "Ошибка запроса", Toast.LENGTH_SHORT).show()
-                val cts = showListFromDB()
-                setList(cts)
             }
         )
         queue.add(stringRequest)
